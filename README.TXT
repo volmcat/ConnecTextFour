@@ -1,6 +1,6 @@
 PROJECT TITLE: ConnecTextFour
 PURPOSE OF PROJECT: A text-based implementation of the classic Connect Four game where two players take turns dropping pieces into columns to get four in a row.
-VERSION or DATE: Version 1.0 (December 12, 2015)
+VERSION or DATE: Version 1.1 (December 3, 2025)
 HOW TO START THIS PROJECT: 
     1. Compile both ConnecTextFour.java and Texel.java
     2. Run: java ConnecTextFour
@@ -21,3 +21,12 @@ GAME FEATURES:
     - Win detection for all directions
     - Text-based interface for easy accessibility
     - Replay option at the end of each game
+
+CHANGELOG:
+------------------------------------------------------------------------
+Version 1.1 (December 3, 2025):
+    - Game now actually checks for 4-in-a-row horizontally, vertically, and diagonally
+
+Version 1.0 (December 12, 2015):
+    - Initial release
+
