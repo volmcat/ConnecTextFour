@@ -1,4 +1,3 @@
-
 /**
  * This program runs a game called ConnectTextFour. An empty game board is printed off and and the first user will enter which column
  * they wish to play in. Their assigned charcter will be prined in the lowest row of that column. Player two will do they same, except
@@ -75,6 +74,7 @@ public class ConnecTextFour
         {
             Texel txl = new Texel(whichColumn, row, player);
             add(txl);
+            return row; // Return the row where piece was placed
         }
         else
         {
@@ -82,7 +82,6 @@ public class ConnecTextFour
             System.out.println("     !! You cannot play in that column !!\n");
             return LOSING_MOVE;
         }
-        return GOOD_MOVE;
     }
 
     /*The print mehthod will print all the characters in the board object in the correct order to form the game board and characters
@@ -144,26 +143,87 @@ public class ConnecTextFour
         game.print();
         char[] players = {'T', 'B'};
         int currentPlayer = 0, col, moveCount = 0;
-        char winner = 0;
-        while (winner == 0 && moveCount < NUM_ROWS * NUM_COLS)
+        boolean gameWon = false;
+        
+        while (!gameWon && moveCount < NUM_ROWS * NUM_COLS)
         {
             System.out.println("The current player is: " + players[currentPlayer]);
             System.out.print("Enter Column Selection: ");
             col = in.nextInt();
-            int checker = game.takeTurn(players[currentPlayer], col);
-            while(checker == BAD_MOVE)
+            int result = game.takeTurn(players[currentPlayer], col);
+            
+            while(result == BAD_MOVE)
             {
                 System.out.println("\n     !! That is an invalid column !!\n");
                 System.out.print("Enter Column Selection: ");
                 col = in.nextInt();
-                checker = game.takeTurn(players[currentPlayer], col);
+                result = game.takeTurn(players[currentPlayer], col);
             }
-            if(checker == LOSING_MOVE)
-                winner = 1;
-            currentPlayer = (currentPlayer + 1) % NUM_PLAYERS;
-            moveCount++;
+            
+            if(result == LOSING_MOVE) {
+                gameWon = true;
+            } else {
+                // Check for actual Connect Four win
+                if(game.checkWin(players[currentPlayer], col, result)) {
+                    gameWon = true;
+                } else {
+                    currentPlayer = (currentPlayer + 1) % NUM_PLAYERS;
+                    moveCount++;
+                }
+            }
             game.print();
         }
         System.out.println("\n     !! The winner is player " + players[currentPlayer] + " !!");
+        in.close(); // Add this line
+    }
+
+    // You might want to add actual win detection logic:
+    private boolean checkWin(char player, int col, int row) {
+        // Check horizontal (left and right)
+        int count = 1;
+        // Check left
+        for (int c = col - 1; c >= 1 && indexOf(c, row) != -1 && 
+             board[indexOf(c, row)].getCh() == player; c--) {
+            count++;
+        }
+        // Check right
+        for (int c = col + 1; c <= numGameCols && indexOf(c, row) != -1 && 
+             board[indexOf(c, row)].getCh() == player; c++) {
+            count++;
+        }
+        if (count >= 4) return true;
+        
+        // Check vertical (down only, since pieces fall down)
+        count = 1;
+        for (int r = row + 1; r < numGameRows && indexOf(col, r) != -1 && 
+             board[indexOf(col, r)].getCh() == player; r++) {
+            count++;
+        }
+        if (count >= 4) return true;
+        
+        // Check diagonal (both directions)
+        // Diagonal 1: top-left to bottom-right
+        count = 1;
+        for (int c = col - 1, r = row - 1; c >= 1 && r >= 0 && indexOf(c, r) != -1 && 
+             board[indexOf(c, r)].getCh() == player; c--, r--) {
+            count++;
+        }
+        for (int c = col + 1, r = row + 1; c <= numGameCols && r < numGameRows && 
+             indexOf(c, r) != -1 && board[indexOf(c, r)].getCh() == player; c++, r++) {
+            count++;
+        }
+        if (count >= 4) return true;
+        
+        // Diagonal 2: top-right to bottom-left
+        count = 1;
+        for (int c = col + 1, r = row - 1; c <= numGameCols && r >= 0 && indexOf(c, r) != -1 && 
+             board[indexOf(c, r)].getCh() == player; c++, r--) {
+            count++;
+        }
+        for (int c = col - 1, r = row + 1; c >= 1 && r < numGameRows && 
+             indexOf(c, r) != -1 && board[indexOf(c, r)].getCh() == player; c--, r++) {
+            count++;
+        }
+        return count >= 4;
     }
 }
